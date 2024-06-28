@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="home">
+    <h1>Welcome to the Chat Room</h1>
+    <p>
+        This is a simple chat room application that uses WebSockets to enable
+        real-time communication between clients. To get started, enter your name
+        below and start chatting!
+    </p>
+    <div class="user-form">
+        <form method="post">
+            <div>
+                <label for="username">Enter your name:</label>
+                <input type="text" id="username" name="username" required value="{{name}}" />
+            </div>
+            <div class="join">
+                <input type="text" name="roomcode" placeholder="Enter Room Code" value="{{roomcode}}">
+                <button type="submit" name="join">Join Chat Room</button>
+            </div>
+            <button type="submit" name="create">Create a New Room</button>
+        </form>
+        {% if error %}
+        <ul>
+            <li>{{error}}</li>
+        </ul>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
