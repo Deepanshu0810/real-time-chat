@@ -102,5 +102,20 @@ def disconnect():
     send({"name":name,"message":f"{name} has left the chat","timestamp":dt},to=room)
     print(f"{name} has left room {room}")
 
+@socketio.on('message')
+def message(data):
+    name = session.get('name')
+    room = session.get('room')
+    if room is None or name is None or room not in rooms:
+        return False
+    
+    dt = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    message = data['data']
+    content = {"name":name,"message":message,"timestamp":dt}
+    send(content,to=room)
+    rooms[room]['messages'].append(content)
+    print(f"{name} sent a message to room {room}")
+    print(f"{name}: {message}")
+
 if __name__ == '__main__':
     socketio.run(app,debug=True)
