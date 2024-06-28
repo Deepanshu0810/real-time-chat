@@ -65,5 +65,45 @@ def chatroom():
     
     return render_template('chatroom.html',name=name,roomcode=room)
 
+@socketio.on('connect')
+def connect(auth):
+    name = session.get('name')
+    room = session.get('room')
+    if room is None or name is None or room not in rooms:
+        return False
+    
+    if room not in rooms:
+        leave_room(room)
+        return False
+    
+    join_room(room)
+    rooms[room]['members'] += 1
+    send({"name":name,"message":f"{name} has joined the chat"},to=room)
+    print(f"{name} has joined room {room}")
+
+
+    join_room(room)
+    rooms[room]['members'] += 1
+    send(f"{name} has joined the chat",room=room)
+
+@socketio.on('disconnect')
+def disconnect():
+    name = session.get('name')
+    room = session.get('room')
+    if room is None or name is None or room not in rooms:
+        return False
+    
+    leave_room(room)
+
+    if room in rooms:
+        rooms[room]['members'] -= 1
+        if rooms[room]['members'] <= 0:
+            del rooms[room]
+            print(f"Room {room} has been deleted")
+
+    
+    send({"name":name,"message":f"{name} has left the chat"},to=room)
+    print(f"{name} has left room {room}")
+
 if __name__ == '__main__':
     socketio.run(app,debug=True)
