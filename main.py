@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import os
 import random
 import string
+from datetime import datetime
 
 load_dotenv()
 SECRET_KEY = os.getenv('SECRET_KEY')
@@ -78,13 +79,9 @@ def connect(auth):
     
     join_room(room)
     rooms[room]['members'] += 1
-    send({"name":name,"message":f"{name} has joined the chat"},to=room)
+    dt = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    send({"name":name,"message":f"{name} has joined the chat","timestamp":dt},to=room)
     print(f"{name} has joined room {room}")
-
-
-    join_room(room)
-    rooms[room]['members'] += 1
-    send(f"{name} has joined the chat",room=room)
 
 @socketio.on('disconnect')
 def disconnect():
@@ -101,8 +98,8 @@ def disconnect():
             del rooms[room]
             print(f"Room {room} has been deleted")
 
-    
-    send({"name":name,"message":f"{name} has left the chat"},to=room)
+    dt = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    send({"name":name,"message":f"{name} has left the chat","timestamp":dt},to=room)
     print(f"{name} has left room {room}")
 
 if __name__ == '__main__':
